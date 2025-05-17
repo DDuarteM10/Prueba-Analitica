@@ -1,10 +1,23 @@
-from librerias.lib import *
-import pages as pg
+from librerias.lib  import *
+import _pages as pg
 from streamlit_option_menu import option_menu
-#nombre pagina web
-#Plataforma Abierta para el Razonamiento Creativo y Exploracion de datos xD
-st.set_page_config(page_title="EUC PARCE",page_icon="fig/logo.png",layout="wide") 
 
+#nombre pagina web
+
+# Manejo seguro del modo oscuro
+
+
+# Debug opcional:
+# st.write("Modo oscuro:", modo_oscuro)
+
+#Plataforma Abierta para el Razonamiento Creativo y Exploracion de datos xD
+st.set_page_config(
+    page_title="EUC PARCE",
+    page_icon="fig/logo.png",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items=None  # Esto oculta el menú de navegación de páginas
+)
 
 # selected = option_menu(
 #     menu_title=None,
