@@ -1,10 +1,19 @@
+
 from librerias.lib import *
 
 #st.set_page_config(page_title="Home", layout="wide")  # Solo si es primera instrucción
 
 def show_home():
     with st.container():
-        st.markdown("<h1 style='text-align: center;'>EUC PARCE</h1>", unsafe_allow_html=True)
+        col1, col2,col3 = st.columns([1, 4 ,1])
+        with col1:
+            st.image("fig/Loguito.svg", width=80)
+        with col2:
+            st.markdown("""
+            <div style='text-align: center;'>
+                <h1 style='margin-top: 10px;'>EUC PARCE</h1>
+            </div>
+            """, unsafe_allow_html=True)
         st.subheader("Plataforma Abierta para el Razonamiento Creativo y Exploración de datos")
         st.write("¡Bienvenido a EUC PARCE! Esta es una herramienta con el propósito de analizar movimientos y saldos en las cuentas de los negocios. "
                  "Permitiendo a los usuarios obtener información valiosa de manera rápida y eficiente.")
@@ -27,7 +36,8 @@ def show_home():
              "Configuracion de tabs: https://discuss.streamlit.io/t/multiple-tabs-in-streamlit/1100/9",
              "Ayuda con container: https://docs.streamlit.io/develop/api-reference/layout/st.container",
              "Configuracion de los temas: https://docs.streamlit.io/develop/concepts/configuration/theming",
-             "Configuracion: https://docs.streamlit.io/develop/concepts/configuration/options"]
+             "Configuracion: https://docs.streamlit.io/develop/concepts/configuration/options",
+             "Recorrido Imagenes: https://discuss.streamlit.io/t/automatic-slideshow/38342/5"]
     cont=st.container()
     with cont:
         for item in items:
