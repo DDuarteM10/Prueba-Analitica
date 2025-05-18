@@ -19,7 +19,7 @@ def cargar_datos():
         return None, None
 
 def filtrosXTabla(dataFrame, clave_key="filtro"):
-    col1A, col2A = st.columns(2)
+    col1A, col2A,col3A = st.columns(3)
     with col1A:
         negocios = dataFrame['negocio'].dropna().unique()
         negocios_sel = st.multiselect(
@@ -49,6 +49,25 @@ def filtrosXTabla(dataFrame, clave_key="filtro"):
             cuentas_filtradas = cuentas
         else:
             cuentas_filtradas = cuentas_sel
+    with col3A:
+        # Filtrar el DataFrame según los negocios seleccionados
+        df_filtrado_negocios = dataFrame[dataFrame['negocio'].isin(negocios_sel)]
+        # Extraer las cuentas únicas solo para esos negocios
+        terceros = sorted(df_filtrado_negocios['tercero'].dropna().unique())
+        opciones_terceros = ["Todas"] + terceros  # Agrega opción "Todas"
+         # Selector múltiple para elegir cuentas
+        terceros_sel = st.multiselect(
+            "Selecciona una o más terceros:",
+            options=opciones_terceros,
+            default=["Todas"],
+            key=f"ter_{clave_key}"
+        )
+
+        # Lógica para determinar las cuentas filtradas
+        if "Todas" in terceros_sel or not terceros_sel:
+            terceros_filtradas = terceros
+        else:
+            terceros_filtradas = terceros_sel
 
     col1B, col2B = st.columns(2)
     with col1B:
@@ -67,7 +86,7 @@ def filtrosXTabla(dataFrame, clave_key="filtro"):
             key=f"fecha_fin_{clave_key}"
         )
     
-    return negocios_sel, fecha_ini, fecha_fin,cuentas_filtradas
+    return negocios_sel, fecha_ini, fecha_fin,cuentas_filtradas,terceros_filtradas
 
 def show_data():
     st.header("📊 Análisis de Datos Financieros")
@@ -79,22 +98,24 @@ def show_data():
 
     # Filtros globales (para ambas tablas)
     st.subheader("🎯 Filtros generales")
-    df_union = pd.concat([df_mov[['negocio', 'cuenta', 'fecha']], df_sal[['negocio', 'cuenta', 'fecha']]])
-    negocios_sel, fecha_ini, fecha_fin, cuentas = filtrosXTabla(df_union, clave_key="global")
+    df_union = pd.concat([df_mov[['negocio', 'cuenta', 'fecha','tercero']], df_sal[['negocio', 'cuenta', 'fecha','tercero']]])
+    negocios_sel, fecha_ini, fecha_fin, cuentas_sel,terceros_sel = filtrosXTabla(df_union, clave_key="global")
 
     # Aplicar filtros a ambos DataFrames
     df_mov_filtrado = df_mov[
         (df_mov["negocio"].isin(negocios_sel)) &
         (df_mov["fecha"] >= fecha_ini) &
         (df_mov["fecha"] <= fecha_fin) &
-        (df_mov["cuenta"].isin(cuentas))
+        (df_mov["cuenta"].isin(cuentas_sel)) &
+        (df_mov["tercero"].isin(terceros_sel)) 
     ]
 
     df_sal_filtrado = df_sal[
         (df_sal["negocio"].isin(negocios_sel)) &
         (df_sal["fecha"] >= fecha_ini) &
         (df_sal["fecha"] <= fecha_fin) &
-        (df_sal["cuenta"].isin(cuentas))
+        (df_sal["cuenta"].isin(cuentas_sel)) &
+        (df_mov["tercero"].isin(terceros_sel)) 
     ]
 
     # Tabs de análisis
@@ -104,45 +125,58 @@ def show_data():
         st.subheader("📋 Tabla de Movimientos")
         st.dataframe(df_mov_filtrado)
 
-        if not df_mov_filtrado.empty:
-            st.subheader("📈 Gráficas de Movimientos")
-            tabGraf1, tabGraf2 = st.tabs(["📉 Débitos", "📈 Créditos"])
-
-            with tabGraf1:
-                graf1, graf2 = st.columns(2)
-                with graf1:
-                    df_pivot1 = df_mov_filtrado.groupby(["fecha", "negocio"])["debitos"].sum().unstack()
-                    fig1, ax1 = plt.subplots(figsize=(8, 4))
-                    df_pivot1.plot(ax=ax1, marker='o', title="Débitos por fecha y negocio")
-                    ax1.set_xlabel("Fecha")
-                    ax1.set_ylabel("Débitos")
-                    ax1.grid(True)
-                    ax1.legend(title="Negocio", bbox_to_anchor=(1.05, 1), loc='upper left')
-                    plt.xticks(rotation=45)
-                    st.pyplot(fig1)
-                with graf2:
-                    df_pivot2 = df_mov_filtrado.groupby(["fecha", "negocio"])["creditos"].sum().unstack()
-                    fig2, ax2 = plt.subplots(figsize=(8, 4))
-                    df_pivot2.plot(ax=ax2, marker='o', title="Créditos por fecha y negocio")
-                    ax2.set_xlabel("Fecha")
-                    ax2.set_ylabel("Créditos")
-                    ax2.grid(True)
-                    ax2.legend(title="Negocio", bbox_to_anchor=(1.05, 1), loc='upper left')
-                    plt.xticks(rotation=45)
-                    st.pyplot(fig2)
+        
 
     with tab2:
         st.subheader("📋 Tabla de Saldos")
-        st.dataframe(df_sal_filtrado)
+        st.dataframe(df_sal_filtrado.style.applymap(color_saldo, subset=["saldo"]))
+    
+    # Sección SEPARADA para las gráficas (por fuera de los tabs anteriores)
+    if not df_mov_filtrado.empty or not df_sal_filtrado.empty:
+        st.markdown("---")
+        st.header("📊 Gráficas de Análisis")
+        tabGraf1, tabGraf2 = st.tabs(["📉 Débitos/Créditos", "📈 Saldos"])
 
-        if not df_sal_filtrado.empty:
-            st.subheader("📈 Gráfica de Saldos")
-            df_pivot = df_sal_filtrado.groupby(["fecha", "negocio"])["saldo"].sum().unstack()
-            fig, ax = plt.subplots(figsize=(10, 5))
-            df_pivot.plot(ax=ax, marker='o', title="Saldo por fecha y negocio")
-            ax.set_xlabel("Fecha")
-            ax.set_ylabel("Saldo")
-            ax.grid(True)
-            ax.legend(title="Negocio", bbox_to_anchor=(1.05, 1), loc='upper left')
-            plt.xticks(rotation=45)
-            st.pyplot(fig)
+        with tabGraf1:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                df_pivot1 = df_mov_filtrado.groupby(["fecha", "negocio"])["debitos"].sum().unstack()
+                fig1, ax1 = plt.subplots(figsize=(8, 4))
+                df_pivot1.plot(ax=ax1, marker='o', title="Débitos por fecha y negocio")
+                ax1.set_xlabel("Fecha")
+                ax1.set_ylabel("Débitos")
+                ax1.grid(True)
+                ax1.legend(title="Negocio", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.xticks(rotation=45)
+                st.pyplot(fig1)
+
+            with col2:
+                df_pivot2 = df_mov_filtrado.groupby(["fecha", "negocio"])["creditos"].sum().unstack()
+                fig2, ax2 = plt.subplots(figsize=(8, 4))
+                df_pivot2.plot(ax=ax2, marker='o', title="Créditos por fecha y negocio")
+                ax2.set_xlabel("Fecha")
+                ax2.set_ylabel("Créditos")
+                ax2.grid(True)
+                ax2.legend(title="Negocio", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.xticks(rotation=45)
+                st.pyplot(fig2)
+
+    with tabGraf2:
+        df_pivot = df_sal_filtrado.groupby(["fecha", "negocio"])["saldo"].sum().unstack()
+        fig3, ax3 = plt.subplots(figsize=(10, 5))
+        df_pivot.plot(ax=ax3, marker='o', title="Saldo por fecha y negocio")
+        ax3.set_xlabel("Fecha")
+        ax3.set_ylabel("Saldo")
+        ax3.grid(True)
+        ax3.legend(title="Negocio", bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.xticks(rotation=45)
+        st.pyplot(fig3)
+        
+def color_saldo(val):
+    color = "green" if val > 0 else "red" if val < 0 else "black"
+    return f"color: {color}"
+
+# Aplica el estilo y muéstralo
+
+        
