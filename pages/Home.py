@@ -23,7 +23,7 @@ def show_home():
         st.markdown("""
         1. En la ruta <b>data</b>, se cargan automáticamente los datos de un archivo Excel.<br>
         2. La herramienta extrae información valiosa de los negocios para la construcción de filtros.<br>
-        &emsp;• Filtros por negocio, por fecha y por documento, en este caso el filtro mas optimo es por fecha, ya que no se puede relacionar correctamente los documentos en la tabla saldos<br>
+        &emsp;• Filtros por negocio, por fecha y por documento, en este caso el filtro más optimo es por fecha.<br>
         3. Dentro del menú <b>Dashboard</b>, se pueden visualizar estadísticas generales de los datos y gráficos de los mismos.<br>
         &emsp;• Si el usuario en algún momento necesita descargar la información, es posible en formato CSV.
         """, unsafe_allow_html=True)

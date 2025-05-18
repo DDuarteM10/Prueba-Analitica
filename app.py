@@ -30,7 +30,7 @@ styles = {
 pages = ["Home", "Dashboard","Desarrollador","GitHub"]  # O ["Home", "Data"] si cambias el nombre en tu código
 urls = {"GitHub": "https://github.com/DDuarteM10"}
 options = {
-    "show_menu": True,
+    "show_menu": False,
     "show_sidebar": False,
 }
 
