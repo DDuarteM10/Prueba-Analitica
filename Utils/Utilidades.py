@@ -20,8 +20,8 @@ def mostrar_filtros():
 def cargar_Archivos():
     archivo = "docs/data.xlsx"
     try:
-        df_mov = pd.read_excel(archivo, sheet_name="movimientos")
-        df_sal = pd.read_excel(archivo, sheet_name="saldos")
+        df_mov  = pd.read_excel(archivo, sheet_name="movimientos", engine='openpyxl')
+        df_sal = pd.read_excel(archivo, sheet_name="saldos", engine='openpyxl')
         df_mov["fecha"] = pd.to_datetime(df_mov["fecha"].astype(str), format="%Y%m%d", errors="coerce").dt.date
         df_sal["fecha"] = pd.to_datetime(df_sal["fecha"].astype(str), format="%Y%m%d", errors="coerce").dt.date
         df_mov["documento"] = df_mov["documento"].astype(str)
