@@ -45,7 +45,7 @@ page = st_navbar(
 functions = {
     "Home": pg.show_home,
     "Dashboard": pg.show_data,  # O "Data": pg.show_data si cambias el nombre
-    "Desarrollador": pg.show_Tablas,
+    "Desarrollador": pg.show_Info,
 }
 
 go_to = functions.get(page)

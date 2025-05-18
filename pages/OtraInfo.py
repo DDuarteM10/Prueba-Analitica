@@ -1,7 +1,7 @@
 from librerias.lib import *
 from PIL import Image
 
-def show_Tablas():
+def show_Info():
     st.title("Conoce al desarrollador de EUC PARCE")
     
     # Cargar imagen con alta resolución
