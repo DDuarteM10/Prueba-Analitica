@@ -111,7 +111,7 @@ def show_data():
     df_union = pd.concat([df_mov[['negocio', 'cuenta', 'fecha', 'documento']], df_sal[['negocio', 'cuenta', 'fecha']]], sort=False)
     negocios_sel, fecha_ini, fecha_fin, cuentas_sel = filtrosXTabla(df_union, clave_key="global")
 
-    # Aplicar filtros a ambos DataFrames
+
     df_mov_filtrado = df_mov[
         (df_mov["negocio"].isin(negocios_sel)) &
         (df_mov["fecha"] >= fecha_ini) &
@@ -141,7 +141,6 @@ def show_data():
         st.subheader("📋 Tabla de Saldos")
         st.dataframe(df_sal_filtrado.style.applymap(color_saldo, subset=["saldo"]))
     
-    # Sección SEPARADA para las gráficas (por fuera de los tabs anteriores)
     if not df_mov_filtrado.empty or not df_sal_filtrado.empty:
         st.markdown("---")
         st.header("🚨Alertas y Gráficas de Análisis 📊")
@@ -193,16 +192,12 @@ def show_data():
             #         if df_mov_nego.empty:
             #             continue
 
-            #         # Ordenar por fecha
             #         df_mov_nego = df_mov_nego.sort_values(by="fecha")
 
-            #         # Calcular saldo estimado acumulado
             #         df_mov_nego["saldo_estimado"] = df_mov_nego["creditos"].cumsum() - df_mov_nego["debitos"].cumsum()
 
-            #         # Graficar en el mismo eje con etiqueta
             #         ax.plot(df_mov_nego["fecha"], df_mov_nego["saldo_estimado"], marker='o', label=negocio)
 
-            #     # Personalizar la gráfica después del bucle
             #     ax.set_title("Saldo estimado acumulado por negocio")
             #     ax.set_xlabel("Fecha")
             #     ax.set_ylabel("Saldo estimado")
@@ -276,7 +271,6 @@ def show_data():
 
                         st.dataframe(resumen_semanal)
 
-                        # Opcional: graficar promedio semanal por negocio
                         for negocio in resumen_semanal["negocio"].unique():
                             df_nego = resumen_semanal[resumen_semanal["negocio"] == negocio]
                             figsemanal, axSemanal = plt.subplots(figsize=(10, 5))
