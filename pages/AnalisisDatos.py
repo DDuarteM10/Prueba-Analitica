@@ -269,38 +269,72 @@ def show_data():
                                 st.dataframe(resumen_semanal2)
                         con2=st.container()
                         with con2:
+                            
+                            opcion = st.selectbox(
+                                "Selecciona una tabla:",
+                                ["📈 Grafica resumen semanal", "💰 Crecimiento  semanal de debitos y creditos"]
+                            )
                             colSaldos,colMov=st.columns(2)
-                            with colSaldos:
-                                for negocio in resumen_semanal["negocio"].unique():
-                                    df_nego = resumen_semanal[resumen_semanal["negocio"] == negocio]
-                                    # Combina año y semana para el eje x
-                                    df_nego["año_semana"] = df_nego["año"].astype(str) + "-S" + df_nego["semana"].astype(str)
-                                    figsemanal, axSemanal = plt.subplots(figsize=(12, 5))
-                                    axSemanal.bar(df_nego["año_semana"], df_nego["mean"], width=0.6, label=f"{negocio}", color="#2563eb")
-                                    axSemanal.set_title(f"Saldo promedio semanal - {negocio}")
-                                    axSemanal.set_xlabel("Año-Semana")
-                                    axSemanal.set_ylabel("Saldo promedio")
-                                    axSemanal.grid(True, axis='y')
-                                    axSemanal.legend()
-                                    plt.xticks(rotation=45)
-                                    st.pyplot(figsemanal)
-                            with colMov:
-                                # Graficar débitos y créditos promedio semanal por negocio
-                                for negocio in resumen_semanal2["negocio"].unique():
-                                    df_nego = resumen_semanal2[resumen_semanal2["negocio"] == negocio].copy()
-                                    # Combina año y semana para el eje x
-                                    df_nego["año_semana"] = df_nego["año"].astype(str) + "-S" + df_nego["semana"].astype(str)
-                                    fig, ax = plt.subplots(figsize=(12, 5))
-                                    # Barras para débitos y créditos promedio
-                                    ax.bar(df_nego["año_semana"], df_nego[("debitos", "mean")], width=0.4, label="Débitos promedio", color="#2563eb")
-                                    ax.bar(df_nego["año_semana"], df_nego[("creditos", "mean")], width=0.4, label="Créditos promedio", color="#fbbf24", bottom=df_nego[("debitos", "mean")]*0)  # Para que no se apilen
-                                    ax.set_title(f"Débitos y Créditos promedio semanal - {negocio}")
-                                    ax.set_xlabel("Año-Semana")
-                                    ax.set_ylabel("Monto promedio")
-                                    ax.grid(True, axis='y')
-                                    ax.legend()
-                                    plt.xticks(rotation=45)
-                                    st.pyplot(fig)   
+                            if opcion == "📈 Grafica resumen semanal":
+                                with colSaldos:
+                                    for negocio in resumen_semanal["negocio"].unique():
+                                        df_nego = resumen_semanal[resumen_semanal["negocio"] == negocio]
+                                        # Combina año y semana para el eje x
+                                        df_nego["año_semana"] = df_nego["año"].astype(str) + "-S" + df_nego["semana"].astype(str)
+                                        figsemanal, axSemanal = plt.subplots(figsize=(12, 5))
+                                        axSemanal.bar(df_nego["año_semana"], df_nego["mean"], width=0.6, label=f"{negocio}", color="#2563eb")
+                                        axSemanal.set_title(f"Saldo promedio semanal - {negocio}")
+                                        axSemanal.set_xlabel("Año-Semana")
+                                        axSemanal.set_ylabel("Saldo promedio")
+                                        axSemanal.grid(True, axis='y')
+                                        axSemanal.legend()
+                                        plt.xticks(rotation=45)
+                                        st.pyplot(figsemanal)
+                                with colMov:
+                                    # Graficar débitos y créditos promedio semanal por negocio
+                                    for negocio in resumen_semanal2["negocio"].unique():
+                                        df_nego = resumen_semanal2[resumen_semanal2["negocio"] == negocio].copy()
+                                        # Combina año y semana para el eje x
+                                        df_nego["año_semana"] = df_nego["año"].astype(str) + "-S" + df_nego["semana"].astype(str)
+                                        fig, ax = plt.subplots(figsize=(12, 5))
+                                        # Barras para débitos y créditos promedio
+                                        ax.bar(df_nego["año_semana"], df_nego[("debitos", "mean")], width=0.4, label="Débitos promedio", color="#2563eb")
+                                        ax.bar(df_nego["año_semana"], df_nego[("creditos", "mean")], width=0.4, label="Créditos promedio", color="#fbbf24", bottom=df_nego[("debitos", "mean")]*0)  # Para que no se apilen
+                                        ax.set_title(f"Débitos y Créditos promedio semanal - {negocio}")
+                                        ax.set_xlabel("Año-Semana")
+                                        ax.set_ylabel("Monto promedio")
+                                        ax.grid(True, axis='y')
+                                        ax.legend()
+                                        plt.xticks(rotation=45)
+                                        st.pyplot(fig)
+                            else:
+                                with st.container():
+                                    ss1,s,ss2 = st.columns([1, 2, 1])
+                                    with s:
+                                        st.subheader("📈 Tendencias en Débitos y Créditos por Negocio")
+                                        for negocio in resumen_semanal2["negocio"].unique():
+                                            df_nego = resumen_semanal2[resumen_semanal2["negocio"] == negocio].copy()
+                                            # Combina año y semana para el eje x
+                                            df_nego["año_semana"] = df_nego["año"].astype(str) + "-S" + df_nego["semana"].astype(str)
+                                            fig, ax = plt.subplots(figsize=(12, 5))
+                                            # Línea de débitos promedio
+                                            ax.plot(df_nego["año_semana"], df_nego[("debitos", "mean")], marker='o', label="Débitos promedio", color="#2563eb")
+                                            # Línea de créditos promedio
+                                            ax.plot(df_nego["año_semana"], df_nego[("creditos", "mean")], marker='o', label="Créditos promedio", color="#fbbf24")
+                                            ax.set_title(f"Tendencia semanal de Débitos y Créditos - {negocio}")
+                                            ax.set_xlabel("Año-Semana")
+                                            ax.set_ylabel("Monto promedio")
+                                            ax.grid(True, axis='y')
+                                            ax.legend()
+                                            plt.xticks(rotation=45)
+                                            st.pyplot(fig)  
+
+
+
+                        
+                            
+                                      
+                                
                         
     
     

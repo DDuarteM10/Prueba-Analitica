@@ -1,6 +1,6 @@
 
 from librerias.lib import *
-
+import os
 #st.set_page_config(page_title="Home", layout="wide")  # Solo si es primera instrucción
 
 def show_home():
@@ -23,10 +23,33 @@ def show_home():
         st.markdown("""
         1. En la ruta <b>data</b>, se cargan automáticamente los datos de un archivo Excel.<br>
         2. La herramienta extrae información valiosa de los negocios para la construcción de filtros.<br>
-        &emsp;• Filtros por negocio, por fecha y por documento.<br>
+        &emsp;• Filtros por negocio, por fecha y por documento, en este caso el filtro mas optimo es por fecha, ya que no se puede relacionar correctamente los documentos en la tabla saldos<br>
         3. Dentro del menú <b>Dashboard</b>, se pueden visualizar estadísticas generales de los datos y gráficos de los mismos.<br>
         &emsp;• Si el usuario en algún momento necesita descargar la información, es posible en formato CSV.
         """, unsafe_allow_html=True)
+    st.markdown("---")    
+    st.subheader("Recorre los avances del desarrollo")
+    Zcol1, Zcol2, Zcol3 = st.columns([1, 2, 1])
+    with Zcol2:
+        img_folder = os.path.join(os.getcwd(), "Recorrido avances")
+        images = [os.path.join(img_folder, f) for f in os.listdir(img_folder) if f.endswith(".png")]
+        images.sort()  # Asegura orden si es importante
+
+        if "img_index" not in st.session_state:
+            st.session_state.img_index = 0
+
+        if images:
+            st.image(images[st.session_state.img_index], use_column_width=True)
+
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col1:
+                if st.button("⬅️ Anterior") and st.session_state.img_index > 0:
+                    st.session_state.img_index -= 1
+            with col3:
+                if st.button("Siguiente ➡️") and st.session_state.img_index < len(images) - 1:
+                    st.session_state.img_index += 1
+        else:
+            st.warning("No se encontraron imágenes en la carpeta 'Recorrido avances'.")
     st.markdown("---")    
     st.subheader("Recursos utilizados")
 

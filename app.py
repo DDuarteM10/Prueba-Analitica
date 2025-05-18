@@ -3,7 +3,7 @@ from streamlit_navigation_bar import st_navbar
 
 st.set_page_config(
     page_title="EUC PARCE",
-    page_icon="fig/logo.png",
+    page_icon="fig/Rm.jpg",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items=None  # Esto oculta el menú de navegación de páginas
@@ -27,8 +27,8 @@ styles = {
         "padding": "14px",
     }
 }
-pages = ["Home", "Dashboard","Tablas"]  # O ["Home", "Data"] si cambias el nombre en tu código
-
+pages = ["Home", "Dashboard","Desarrollador","GitHub"]  # O ["Home", "Data"] si cambias el nombre en tu código
+urls = {"GitHub": "https://github.com/DDuarteM10"}
 options = {
     "show_menu": True,
     "show_sidebar": False,
@@ -37,7 +37,7 @@ options = {
 page = st_navbar(
     pages,
     logo_path=None,  # O tu SVG si tienes uno
-    urls=None,
+    urls=urls,
     styles=styles,
     options=options,
 )
@@ -45,7 +45,7 @@ page = st_navbar(
 functions = {
     "Home": pg.show_home,
     "Dashboard": pg.show_data,  # O "Data": pg.show_data si cambias el nombre
-    "Tablas": pg.show_Tablas,
+    "Desarrollador": pg.show_Tablas,
 }
 
 go_to = functions.get(page)
